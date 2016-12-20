@@ -19,6 +19,7 @@ To study the effect of dimensionnality reduction using structured compression, w
 This dataset can be found at ***website Yann Lecun (+we need to do a bibliography? let's cite his HD3 triple spin paper)***. It is de facto split in 3 subsets : a training set, a test set, and a validation set. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
 When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general input, and is not overfitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
 Here, we merged the training set and test set to then be able to choose the number of images used in the training set and the testing set. Originally, they respectively contained 50000 and 10000 images. Merging and spliting them as we wish allows us to have different proportion of input data in the training set and the dataset.
+***explanation MNIST, visualisation, there's an grey-scale imagine in the img/ folder***
 
 The programming language used in this study is Python 3.5, allowing us to plug in powerful mathematical, statistical and plotting tools, on top of the new machine learning framework tensorflow (R)
 This framework is a useful interface when we want to easily run the computations on GPU, which provides a huge speed up compared to running the computations on CPU because ***explanation to have some content***
@@ -30,6 +31,25 @@ Non linear compression:
 ***explanation, chaining, but we don't have any result on that, maybe we don't want to include this***
 
 3.Results
+Let's consider 2 datasets, one is the original one, let's call it dataset_original, the second one is a transformed one.
+A transformation in our study is defined by a matrix multiplication to reduce the dimensionnality, and a function applied element-wise. Therefore, a transformation is defined by 3 parameters, a kind of matrix used for the reduction, a target dimension, and a function.
+The notation d_m_td_f reprensents the dataset where the matrix m with target dimension td and function f were applied.
+
+Let's consider a transformed dataset
+The idea is that we are going to take a set of 2uples representing 2 images. For each 2uple, we are going to compute the distance (which one is to be determined) between those two points:
+	1.picked from the original, not transformed dataset,
+	2.picked from the transformed data set
+Then we divide the second distance by the first distance. If the transformation keep the information contained in the dataset, it will allow us to classify the data using the transformed dataset (faster). We suppose this is true with the euclidian distance, meaning that if the distances between two random points in the transformed dataset is roughly similar to the distance between the two original points in the original dataset, we won't have any problem classifying the data using the transformed dataset.
+Therefore, if we compute a huge number a quotient of distances, and we plot those results, we should expect a gaussian with mean 1 and small variance for a transformation that keeps the properties of the original dataset and then allows us to classify it.
+
+***theory, JLT, inequality, epsilon***
+***practice: as we can see with the graphs, we can reduce the dimension up to (down to?) 16/32/64 ? without loosing much information regarding the euclidian distance***
+
+Here are the results for the various transformations:
+
+
+Here are the results
+***all the images are in the folder img/, some grouped to be able to compre them, some indepedent, I let you choose which one you want to put. The quotient of distance when we apply a function is not 1, we can say that we would have to improve the nonlinear element-wise function and better tune them to get better results, or that maybe we should use the angular distance or another distance with those functions***
 
 4.Classify
 We used the framework tensorflow for the classification part. This framework provides useful neural networks out of the box with little need to be tuned and adapted. We first set up a simple softmax neural network to get familier with tensorflow's tensors and syntax. This feed forward neural network containing 1 hidden layer yields around 90% of accuracy and runs in less than a second on CPU to classify MNIST pristine dataset.
