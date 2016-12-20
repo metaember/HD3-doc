@@ -32,7 +32,34 @@ Non linear compression:
 3.Results
 
 4.Classify
+We used the framework tensorflow for the classification part. This framework provides useful neural networks out of the box with little need to be tuned and adapted. We first set up a simple softmax neural network to get familier with tensorflow's tensors and syntax. This feed forward neural network containing 1 hidden layer yields around 90% of accuracy and runs in less than a second on CPU to classify MNIST pristine dataset.
+We then implemented a convolutional neural network with 2 feature maps layers, 2 pooling layers, and adding some drop out. This architecture yielded an satisfying 99.2% of accuracy on MNIST pristine dataset but it took 30min of CPU time to train the model. On GPU, the computation time is expected to be a lot smaller but we unfortunately did not have access to a GPU compatible with cudNN (compute capability of 3.1 or 5.2)
+
+We therefore decided to run the classification using softmax feed forward neural networks. We were not able to run days of computation to get better accuracies using the second architecture. We still ran the second architecture on some transformed dataset to check if the speed up were working, and the accuracy wasn't lowered a lot. 
+Here are the results of the classification of the MNIST dataset, going through various pipelines, using a basic softmax feed forward neural network containing 1 hidden layer, with a learning rate of 0.5 and batch size of 100:
+
+Pipeline:
+	Transform: Identity
+	Target dimension: 784
+	Function: Identity
+Result:
+	Accuracy: 90.7%
+	Computation time: 1.xxxs
+
+***repeat with all the various pipelines***
+
 
 5.Problems & Future improvements
+The first obvious problem in this study is the lack of GPU access.
+An improvement, which we will implement as soon as we have access to a GPU with a CUDA compute capability of 5.2, would be to run the classifying part using the second architecture.
+This faster computation pipeline will allow us to run various training phases allowing us to first tune and find the optimal hyperparameters for this dataset.
+It will also allow us to extend the results to other datasets such as CIFAR-10 and CIFAR-100, which input images are a lot bigger than the one in MNIST, and where the complexity is way higher.
+Being able to run the classification part will allow us to plot the optimal accuracy as a function of the feature map sizes and the stride.
+Once the best parameters are found, we will run the classifying part on all the transformed datasets using various transformation, non linear functions, and even chaining the transformations.
+
+Another improvement would be to chain the various transformations and dimensionnality reductions pipelines and compare their efficiencies with those of one unique global dimensionnality reduction pipeline.
+
 
 Conclusion
+This study was a great way to understand in depth the classifying architecture yielding the best result so far in image and sound recognition (aka convolutional neural networks), and the mechanisms associated with this architecture.
+It was also a great way to understand ho structured compression works, and how it allows to reduce the computation times, while still preserving the accuracy. This knowledge is important to either run the algorithms linked with artificial intelligence faster, or run them on less efficient pieces of hardware such as mobile phones.
