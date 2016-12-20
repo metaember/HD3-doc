@@ -1,0 +1,38 @@
+Title:
+Structured compression
+
+
+1.Why structured compression
+Classifying datasets is an active field of research that allows to develop new technology mainly in image and sound recognition.
+The bottleneck when trying to classify datasets are the matrix multiplications happening in the neural networks used to classify the data.
+In order to tackle this bottleneck, and thus allow to run classifying models more rapidly, or at the same speed with cheaper/smaller components, one can use the concept of dimensionnality reduction.
+
+Decreasing the dimensionnality of the dataset being learned results in reducing the number of basic operations computed by the hardware and therefore speed up the classification.
+However, there is a limit to the number of dimension we can reduce the dataset we want to classify to. This paper will study more in depth the concept of dimensionnality reduction using structured compressions.
+
+***explanation to have some content, matrix multiplication O(n^3) time complexity ...***
+
+
+
+2.Setup experimental
+To study the effect of dimensionnality reduction using structured compression, we are going to use the classic MNIST dataset of handwritten digits. This dataset consists in grey-scale 28*28 images representing digits. Each image is associated with a label describing the digit represented by the image.
+This dataset can be found at ***website Yann Lecun (+we need to do a bibliography? let's cite his HD3 triple spin paper)***. It is de facto split in 3 subsets : a training set, a test set, and a validation set. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
+When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general input, and is not overfitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
+Here, we merged the training set and test set to then be able to choose the number of images used in the training set and the testing set. Originally, they respectively contained 50000 and 10000 images. Merging and spliting them as we wish allows us to have different proportion of input data in the training set and the dataset.
+
+The programming language used in this study is Python 3.5, allowing us to plug in powerful mathematical, statistical and plotting tools, on top of the new machine learning framework tensorflow (R)
+This framework is a useful interface when we want to easily run the computations on GPU, which provides a huge speed up compared to running the computations on CPU because ***explanation to have some content***
+
+Structured compression:
+***explanation in depth***
+
+Non linear compression:
+***explanation, chaining, but we don't have any result on that, maybe we don't want to include this***
+
+3.Results
+
+4.Classify
+
+5.Problems & Future improvements
+
+Conclusion
