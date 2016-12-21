@@ -64,7 +64,7 @@
 	Before we speak about structured compression, let's speak about classic compression. A compression part is just used to decrease the dimensionality of the input data (in the case of the MNIST dataset, each image is in the $[0, \dots, 256]^{28*28}$ space as we can consider a 28 by 28 matrix as a flat vector of size 28*28). Compressing the MNIST dataset means finding a mapping between $\mathbb{R}^n$ to $\mathbb{R}^d$ where n is the dimensionality of the pristine, uncompressed input, and d is a number smaller than n.
 	
 	
-	An easy compression mapping to understand is just the action of dropping components. For example in MNIST, if we decided to naively drop the last 200 hundred components, we would end up in $[0,\dots, 256]^{584}$, which will allow us to run the learning phase faster due to a reduce number of basic operations in the matrix multiplications.
+	An easy compression mapping to understand is just the action of dropping components. For example in MNIST, if we decided to naively drop the last 200 components, we would end up in $[0,\dots, 256]^{584}$, which will allow us to run the learning phase faster due to a reduce number of basic operations in the matrix multiplications.
 	
 	
 	Why is this reduction naive? Because dropping arbitrarily the last 200 components might lead to the loss of important information. A better classic compression will take into consideration all the original components of the input data (all the pixels in the case of image recognition with MNIST), such that we don't lose any information.
@@ -88,7 +88,7 @@
 	\end{equation}
 	
 
-	We can demonstrate that $\frac{G}{\sqrt(d)}$ where each coefficient of $G$ is either picked independently into $N(0,1)$ a standard Gaussian random variable, or $\{-1,1\}$ (mean 0, variance not 0) will compress the dataset to $R^d$ (G is of size $\mathbb{R}^n,d$) and will keep the Euclidean distance between two compressed inputs close to the original euclidean distance between the two uncompressed inputs.
+	We can demonstrate that $\frac{G}{\sqrt(d)}$ where each coefficient of $G$ is either picked independently into $N(0,1)$ a standard Gaussian random variable, or $\{-1,1\}$ (mean 0, variance not 0) will compress the dataset to $R^d$ (G is of size $\mathbb{R}^{n,d}$) and will keep the Euclidean distance between two compressed inputs close to the original euclidean distance between the two uncompressed inputs.
 	
 	\paragraph{Proof}
 	All we need is to prove that $f$ preserves the norm. 
@@ -232,6 +232,7 @@
 	
 	Here are the results of the classification of the MNIST dataset, going through various pipelines, using a basic softmax feed forward neural network containing 1 hidden layer, with a learning rate of 0.5 and batch size of 100:
 	
+
 	
 	\paragraph{Pipeline}
 	\begin{itemize}
@@ -242,53 +243,37 @@
 	 \paragraph{Result}
 	 \begin{itemize}
 			\item Accuracy: 90.7\%
-			\item Computation time: 1.xxx s
+			\item Computation time: 130 s
 	\end{itemize}
 
 
 
 	\paragraph{Pipeline}
 	\begin{itemize}
-		\item Transform: Identity
-		\item Target dimension: 784
+		\item Transform: G
+		\item Target dimension: 400
 		\item Function: Identity
 	\end{itemize}
 	\paragraph{Result}
 	\begin{itemize}
-		\item Accuracy: 90.7\%
-		\item Computation time: 1.xxx s
+		\item Accuracy: 85.6\%
+		\item Computation time: 34 s
 	\end{itemize}
-	
 	
 	
 		\paragraph{Pipeline}
 		\begin{itemize}
-			\item Transform: Identity
-			\item Target dimension: 784
+			\item Transform: Girc
+			\item Target dimension: 400
 			\item Function: Identity
 		\end{itemize}
 		\paragraph{Result}
 		\begin{itemize}
-			\item Accuracy: 90.7\%
-			\item Computation time: 1.xxx s
+			\item Accuracy: 85.6\%
+			\item Computation time: 34 s
 		\end{itemize}
 		
 		
-		
-		
-			\paragraph{Pipeline}
-			\begin{itemize}
-				\item Transform: Identity
-				\item Target dimension: 784
-				\item Function: Identity
-			\end{itemize}
-			\paragraph{Result}
-			\begin{itemize}
-				\item Accuracy: 90.7\%
-				\item Computation time: 1.xxx s
-			\end{itemize}
-
-
 	
 	
 	\section{Problems Future improvements}
