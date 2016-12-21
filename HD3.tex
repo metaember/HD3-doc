@@ -63,8 +63,8 @@
 	This dataset can be found at \url{http://yann.lecun.com/exdb/mnist/}. It is de facto split in 2 subsets : a training set (60k entries) and a test set (10k entries). We will devide the training set into 50k entries of training and 10k for validation. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
 	
 
-	When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general inputs, and is not overfitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
-	Here, we merged the training set and test set to then be able to choose the number of images used in the training set and the testing set. Merging and spliting them as we wish allows us to have different proportion of input data in the training set and the test set.
+	When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general inputs, and is not over-fitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
+	Here, we merged the training set and test set to then be able to choose the number of images used in the training set and the testing set. Merging and splitting them as we wish allows us to have different proportion of input data in the training set and the test set.
 	
 	The programming language used in this study is Python 3.5, allowing us to plug in powerful mathematical, statistical and plotting tools, on top of the new machine learning framework Tensorflow.
 	This framework is a useful interface when we want to easily run the computations on GPU, which provides a huge speed up compared to running the computations on CPU because it is highly optimized for massively parallelisable operations, such as computing matrix products. 
@@ -84,7 +84,7 @@
 	Before we dive into a better classic compression and structured compression, let's notice that if we want to be able to classify a compressed dataset and obtain almost the same results as when we classify the uncompressed dataset, we need an invariant. Something that will allow us to say that two inputs in the same class/set/group are close together, and that two inputs that are in different classes/sets/groups are far from each other. Each input can be seen as a vector in the $\mathbb{R}^n$ space. After the compression, the same input is a vector in the $\mathbb{R}^d$ space. What comes to mind as an invariant would be a distance, a notion that expresses clearly the fact that two inputs are similar when they are close to each other, and different when they are far from each other.
 	
 	
-	Note that we don't know yet which distance to use. However, since we are working in finite dimension, all the norms are equivalent, and it is therefore convenient and not restricting to chose the Euclidian distance ($L^2$ norm), as one possible distance. Another distance that could be chosen is the angular distance.
+	Note that we don't know yet which distance to use. However, since we are working in finite dimension, all the norms are equivalent, and it is therefore convenient and not restricting to chose the Euclidean distance ($L^2$ norm), as one possible distance. Another distance that could be chosen is the angular distance.
 	
 	A great compression is therefore a compression that won't change a given distance by much. There's a theoretical limit to the level of compression we can achieve, if we want to keep the accuracy within a certain range, and this theoretical result is given by the JLT theorem.
 	
@@ -194,26 +194,27 @@
 	
 	Therefore, if we compute a huge number a quotient of distances, and we plot those results, we should expect a Gaussian with mean 1 and small variance for a transformation that keeps the properties of the original dataset and then allows us to classify it.
 	
-	Here are the results for the various transformations:
+	The various transformations can be found in the annex \ref{graphs} of this document.
 	
 	
-%	\includepdf[nup=nx4]{all.pdf}
+%	\includepdf[nup=2x4, pages={33-52}, delta = 20 20]{img/all.pdf}
 	
-	\begin{figure}
-		\centering
-		\begin{minipage}{.5\textwidth}
-			\centering
-			\includegraphics[width=.8\linewidth]{img/t_Drop_d_256_f_Identity.pdf}
-			\caption{t\_Drop\_d\_256\_f\_Identity}
-		\end{minipage}%
-		\begin{minipage}{.5\textwidth}
-			\centering
-			\includegraphics[width=0.8 \linewidth]{img/t_Drop_d_256_f_Sigmoid_diff.pdf}
-			\caption{t\_Drop\_d\_256\_f\_Sigmoid diff}
-			\label{fig:test2}
-		\end{minipage}
-	\end{figure}
-	
+%	\begin{figure}
+%		\centering
+%		\begin{minipage}{.5\textwidth}
+%			\centering
+%			\includegraphics[width=.8\linewidth]{img/t_Drop_d_256_f_Identity.pdf}
+%			\caption{t\_Drop\_d\_256\_f\_Identity}
+%		\end{minipage}%
+%		\begin{minipage}{.5\textwidth}
+%			\centering
+%			\includegraphics[width=0.8 \linewidth]{img/t_Drop_d_256_f_Sigmoid_diff.pdf}
+%			\caption{t\_Drop\_d\_256\_f\_Sigmoid diff}
+%			\label{fig:test2}
+%		\end{minipage}
+%	\end{figure}
+%	
+
 	As we can see with the graphs, we can reduce the dimension a significant amount without loosing much information regarding the euclidean distance. When the quotient of distance when we apply a function is not 1, we would have to improve the nonlinear element-wise function and better tune them to get better results. 
 	
 	
@@ -271,7 +272,14 @@ This project was a great way to understand in depth the classifying architecture
 
 It was also a great way to understand how structured compression works, and how it allows to reduce the computation times, while still preserving the accuracy. This knowledge is important to either run the algorithms linked with artificial intelligence faster, or run them on less efficient pieces of hardware such as mobile phones.
 
+\newpage
+\appendix
 
+\section{Result graphs}
+\label{graphs}
+
+Include the graphs here
+%\includepdf{img/matrix.pdf}
 
 	\newpage
 	\nocite{*}
