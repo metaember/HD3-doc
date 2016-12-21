@@ -11,6 +11,8 @@
 \usepackage[backend=biber]{biblatex}
 \bibliography{bib}
 
+\usepackage{stmaryrd}
+
 \author{Leo Touroul and Charles Bine}
 \title{Structured compression}
 \date{December 20, 2016}
@@ -62,7 +64,7 @@
 	Before we speak about structured compression, let's speak about classic compression. A compression part is just used to decrease the dimensionality of the input data (in the case of the MNIST dataset, each image is in the $[0, \dots, 256]^{28*28}$ space as we can consider a 28 by 28 matrix as a flat vector of size 28*28). Compressing the MNIST dataset means finding a mapping between $\mathbb{R}^n$ to $\mathbb{R}^d$ where n is the dimensionality of the pristine, uncompressed input, and d is a number smaller than n.
 	
 	
-	An easy compression mapping to understand is just the action of dropping components. For example in MNIST, if we decided to naively drop the last 200 hundred components, we would end up in $[0,\dots, 256]^584$, which will allow us to run the learning phase faster due to a reduce number of basic operations in the matrix multiplications.
+	An easy compression mapping to understand is just the action of dropping components. For example in MNIST, if we decided to naively drop the last 200 hundred components, we would end up in $[0,\dots, 256]^{584}$, which will allow us to run the learning phase faster due to a reduce number of basic operations in the matrix multiplications.
 	
 	
 	Why is this reduction naive? Because dropping arbitrarily the last 200 components might lead to the loss of important information. A better classic compression will take into consideration all the original components of the input data (all the pixels in the case of image recognition with MNIST), such that we don't lose any information.
@@ -79,7 +81,7 @@
 	
 	
 	\paragraph{Johnson–Lindenstrauss lemma}
-	Given $0 < \varepsilon < 1$, a set $X$ of $m$ points in $\mathbb{R}^N$, and a number $n > \frac{8 \ln(m)}{\varepsilon^2}$, there is a linear map $f : \mathbb{R}^N \mapsto \mathbb{R}^n$ such that:
+	Given $0 < \varepsilon < 1$, a set $X$ of $m$ points in $\mathbb{R}^n$, and a number $k > \frac{8 \ln(m)}{\varepsilon^2}$, there is a linear map $f : \mathbb{R}^n \mapsto \mathbb{R}^d$ such that:
 	
 	\begin{equation}
 		\forall u,v \in X \quad (1-\varepsilon)\|u-v\|^2 \leq \|f(u) - f(v)\|^2 \leq (1+\varepsilon)\|u-v\|^2
@@ -88,7 +90,17 @@
 
 	We can demonstrate that $\frac{G}{\sqrt(d)}$ where each coefficient of $G$ is either picked independently into $N(0,1)$ a standard Gaussian random variable, or $\{-1,1\}$ (mean 0, variance not 0) will compress the dataset to $R^d$ (G is of size $\mathbb{R}^n,d$) and will keep the Euclidean distance between two compressed inputs close to the original euclidean distance between the two uncompressed inputs.
 	
-	***Here is the proof, if you don't have it I'll send a picture, it's quite fast***
+	\paragraph{Proof}
+	All we need is to prove that $f$ preserves the norm. 
+	
+	\begin{align*}
+		y^i  &= f(x^i) = \frac{1}{\sqrt{d}} M x^i = \frac{1}{\sqrt{d}} \sum_{k=1}^d \sum_{j=1}^{n} n_{kj} x_j^i \mathbb{I}(k)\\
+		\|y \| _2^2 &= \sum_{j=1}^{d} \frac{1}{d} \left(\sum_{i=1}^{n} n_{ji} x_i \right)^2\\
+		\mathbb{E}\left[\| y \|_2^2\right] &= \frac{1}{d}  \sum_{j=1}^{d} \mathbb{E} \left[\left(\sum_{i=1}^{n} n_{ji} x_i \right)^2\right]\\
+		&= \frac{1}{d}  \sum_{j=1}^{d} \sum_{i=1}^{n} x_i^2 \\
+		&= \|x\|^2_2
+	\end{align*}
+	
 	
 	This compression is a great tool that will allow us to run the learning phase faster. However, this compression is a matrix multiplication of overall time complexity $O(dnp)$, where $d$ is the target dimension of the compression, $n$ the original dimension, and $p$ the number of inputs.  
 	
@@ -233,6 +245,48 @@
 			\item Computation time: 1.xxx s
 	\end{itemize}
 
+
+
+	\paragraph{Pipeline}
+	\begin{itemize}
+		\item Transform: Identity
+		\item Target dimension: 784
+		\item Function: Identity
+	\end{itemize}
+	\paragraph{Result}
+	\begin{itemize}
+		\item Accuracy: 90.7\%
+		\item Computation time: 1.xxx s
+	\end{itemize}
+	
+	
+	
+		\paragraph{Pipeline}
+		\begin{itemize}
+			\item Transform: Identity
+			\item Target dimension: 784
+			\item Function: Identity
+		\end{itemize}
+		\paragraph{Result}
+		\begin{itemize}
+			\item Accuracy: 90.7\%
+			\item Computation time: 1.xxx s
+		\end{itemize}
+		
+		
+		
+		
+			\paragraph{Pipeline}
+			\begin{itemize}
+				\item Transform: Identity
+				\item Target dimension: 784
+				\item Function: Identity
+			\end{itemize}
+			\paragraph{Result}
+			\begin{itemize}
+				\item Accuracy: 90.7\%
+				\item Computation time: 1.xxx s
+			\end{itemize}
 
 
 	
