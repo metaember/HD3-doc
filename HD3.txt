@@ -72,31 +72,26 @@ To sum up, the two main parts of structured compression are:
 1.balance the data using a rotation matrix. The hadamard matrix, thanks to it's recursive definition allows us to compute this step with small space complexity and in O(nlog(n)) time
 2.compress the data using a projection matrix. Here we can use a G matrix, or as proved just above, we can use a G_circ matrix to speed up the computation O(nlog(d) achieved) and reduce the space complexity. To maintain the independence caracteristic, we just need to use a diagonal matrix before we compute the compression using FFT.
 
-Non linear compression:
-***explanation, chaining, but we don't have any result on that, maybe we don't want to include this***
-
-
 
 3.Results
 Let's consider 2 datasets, one is the original one, let's call it dataset_original, the second one is a transformed one.
-A transformation in our study is defined by a matrix multiplication to reduce the dimensionnality, and a function applied element-wise. Therefore, a transformation is defined by 3 parameters, a kind of matrix used for the reduction, a target dimension, and a function.
+A transformation in our study is defined by a matrix multiplication to provide a structured compression (for sure, the structured compression is equivalent to a matrix multiplication, but to benefit the speed ups of structured compressions, we implemented the structured compression using FFT, and Hadamard specificity mainly using python scipy package), and a function applied element-wise. Therefore, a transformation is defined by 3 parameters, a matrix (representing the structured compression) used for the reduction, a target dimension, and a function.
 The notation d_m_td_f reprensents the dataset where the matrix m with target dimension td and function f were applied.
 
 Let's consider a transformed dataset
 The idea is that we are going to take a set of 2uples representing 2 images. For each 2uple, we are going to compute the distance (which one is to be determined) between those two points:
 	1.picked from the original, not transformed dataset,
 	2.picked from the transformed data set
-Then we divide the second distance by the first distance. If the transformation keep the information contained in the dataset, it will allow us to classify the data using the transformed dataset (faster). We suppose this is true with the euclidian distance, meaning that if the distances between two random points in the transformed dataset is roughly similar to the distance between the two original points in the original dataset, we won't have any problem classifying the data using the transformed dataset.
+Then we divide the second distance by the first distance. As explained before, if the distance is conserved when we apply a compression, we should be able to classify the data with the tranformed dataset as good as with the original dataset, but faster. We suppose this is true with the euclidian distance, meaning that if the distances between two random points in the transformed dataset is roughly similar to the distance between the two original points in the original dataset, we won't have any problem classifying the data using the transformed dataset.
 Therefore, if we compute a huge number a quotient of distances, and we plot those results, we should expect a gaussian with mean 1 and small variance for a transformation that keeps the properties of the original dataset and then allows us to classify it.
 
-***theory, JLT, inequality, epsilon***
+***JLT inequality, epsilon, target dim***
 ***practice: as we can see with the graphs, we can reduce the dimension up to (down to?) 16/32/64 ? without loosing much information regarding the euclidian distance***
 
 Here are the results for the various transformations:
+***choose what suits you best, I thought it was great to display the graphs in a matrix manner to be able to compare the results***
 
-
-Here are the results
-***all the images are in the folder img/, some grouped to be able to compre them, some indepedent, I let you choose which one you want to put. The quotient of distance when we apply a function is not 1, we can say that we would have to improve the nonlinear element-wise function and better tune them to get better results, or that maybe we should use the angular distance or another distance with those functions***
+***With the stuff not working (basically when we apply functions, there is still the mean, the variance, skewness and kurtosis, you can put a note saying it must be because we are not in the linear part of the function or some other stuff. Not forced to speak about it)***
 
 4.Classify
 We used the framework tensorflow for the classification part. This framework provides useful neural networks out of the box with little need to be tuned and adapted. We first set up a simple softmax neural network to get familier with tensorflow's tensors and syntax. This feed forward neural network containing 1 hidden layer yields around 90% of accuracy and runs in less than a second on CPU to classify MNIST pristine dataset.
@@ -113,7 +108,10 @@ Result:
 	Accuracy: 90.7%
 	Computation time: 1.xxxs
 
-***repeat with all the various pipelines***
+***repeat with all the various transformations***
+
+As seen here, the computation time is reduced and the loss in accuracy might be acceptable. Of course there is a trade-off here and one should choose accordingly to their needs.
+It would have been great to check the speedup using GPU computing and the second, more complex, classifying architecture.
 
 
 5.Problems & Future improvements
@@ -122,11 +120,12 @@ An improvement, which we will implement as soon as we have access to a GPU with 
 This faster computation pipeline will allow us to run various training phases allowing us to first tune and find the optimal hyperparameters for this dataset.
 It will also allow us to extend the results to other datasets such as CIFAR-10 and CIFAR-100, which input images are a lot bigger than the one in MNIST, and where the complexity is way higher.
 Being able to run the classification part will allow us to plot the optimal accuracy as a function of the feature map sizes and the stride.
-Once the best parameters are found, we will run the classifying part on all the transformed datasets using various transformation, non linear functions, and even chaining the transformations.
+Once the best parameters are found, we will run the classifying part on all the transformed datasets using various transformation, non linear functions.
 
 Another improvement would be to chain the various transformations and dimensionnality reductions pipelines and compare their efficiencies with those of one unique global dimensionnality reduction pipeline.
 
 
 Conclusion
 This study was a great way to understand in depth the classifying architecture yielding the best result so far in image and sound recognition (aka convolutional neural networks), and the mechanisms associated with this architecture.
-It was also a great way to understand ho structured compression works, and how it allows to reduce the computation times, while still preserving the accuracy. This knowledge is important to either run the algorithms linked with artificial intelligence faster, or run them on less efficient pieces of hardware such as mobile phones.
+
+It was also a great way to understand how structured compression works, and how it allows to reduce the computation times, while still preserving the accuracy. This knowledge is important to either run the algorithms linked with artificial intelligence faster, or run them on less efficient pieces of hardware such as mobile phones.
