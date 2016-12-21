@@ -29,18 +29,7 @@
 	Decreasing the dimensionality of the dataset being learned results in reducing the number of basic operations computed by the hardware during the matrix multiplications and therefore speed up the classification.
 	However, there is a limit to the number of dimensions we can reduce the dataset we want to classify to. This paper will delve into the concept of dimensionality reduction using structured compressions.
 	
-	***explanation to have some content, matrix multiplication of size $n*n$, $O(n^3)$ time complexity ...***
-	Here is why matrix multiplication are the basic operations in machine learning, when using the basic feed forward structure in the back propagation algorithm:
-	***http://briandolhansky.com/blog/2014/10/30/artificial-neural-networks-matrix-form-part-5***
-	***great explanations, we just have to explain the same thing here, put in some formulas in Latex showing that there is a lot of matrix multiplications>
-	You can maybe separate and do something like:
-	
-	Case study: classic feed forward neural network taught by the backpropagation algorithm
-	1. Feed forward step
-	some formula including the matrix multiplications between each layer
-	2. Backpropagation step
-	some formula including the matrix multiplications 
-	Conclusion: the smaller the dimension, the faster
+	Indeed, matrix multiplication for matrices of size $n*n$ is an operation requiring $O(n^3)$ time complexity. Moreover, matrix multiplication are the basic operations in machine learning, when using the basic feed forward structure in the back propagation algorithm. Reducing the dimensionality of the problem therefore has a dramatic speedup on the run time.
 	
 	
 	
