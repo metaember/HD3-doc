@@ -7,12 +7,21 @@ Classifying datasets is an active field of research that allows to develop new t
 The bottleneck when trying to classify datasets are the matrix multiplications happening in the neural networks used to classify the data.
 In order to tackle this bottleneck, and thus allow to run classifying models more rapidly, or at the same speed with cheaper/smaller components, one can use the concept of dimensionnality reduction.
 
-Decreasing the dimensionnality of the dataset being learned results in reducing the number of basic operations computed by the hardware and therefore speed up the classification.
+Decreasing the dimensionnality of the dataset being learned results in reducing the number of basic operations computed by the hardware during the matrix multiplications and therefore speed up the classification.
 However, there is a limit to the number of dimension we can reduce the dataset we want to classify to. This paper will study more in depth the concept of dimensionnality reduction using structured compressions.
 
 ***explanation to have some content, matrix multiplication O(n^3) time complexity ...***
+Here is why matrix multiplication are the basic operations in machine learning, at least when we use the basic feed forward structure taught by the backpropagation algorithm:
+***http://briandolhansky.com/blog/2014/10/30/artificial-neural-networks-matrix-form-part-5***
+***great explanations, we just have to explain the same thing here, put in some formulas in Latex showing that there is a lot of matrix multiplications>
+   You can maybe separate and do something like:
 
-
+   Case study: classic feed forward neural network taught by the backpropagation algorithm
+   1. Feed forward step
+      some formula including the matrix multiplications between each layer
+   2. Backpropagation step
+      some formula including the matrix multiplications 
+   Conclusion: the smaller the dimension, the faster
 
 2.Setup experimental
 To study the effect of dimensionnality reduction using structured compression, we are going to use the classic MNIST dataset of handwritten digits. This dataset consists in grey-scale 28*28 images representing digits. Each image is associated with a label describing the digit represented by the image.
