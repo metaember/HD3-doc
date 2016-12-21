@@ -5,6 +5,10 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[english]{babel}
+\usepackage[hidelinks]{hyperref}
+\usepackage[backend=biber]{biblatex}
+\bibliography{bib}
+
 \author{Leo Touroul and Charles Bine}
 \title{Structured compression}
 \date{December 20, 2016}
@@ -29,10 +33,13 @@
 	***explanation to have some content, matrix multiplication $O(n^3)$ time complexity ...***		
 	
 	\section{Setup experimental setup}
-	To study the effect of dimensionality reduction using structured compression, we are going to use the classic MNIST dataset of handwritten digits. This dataset consists in grey-scale $28 \times 28$ images representing digits. Each image is associated with a label describing the digit represented by the image.
+	To study the effect of dimensionality reduction using structured compression, we are going to use the classic MNIST dataset of handwritten digits. This dataset consists in grey-scale $28 \times 28$ images representing digits. Each image is associated with a label describing the digit represented by the image. Figure \ref{img:example_mnist_img} shows what an image from the dataset might look like. In that case, the associated label is "7".
 	
 	
-	This dataset can be found at ***website Yann Lecun (+we need to do a bibliography? let's cite his HD3 triple spin paper)***. It is de facto split in 3 subsets : a training set, a test set, and a validation set. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
+	This dataset can be found at \url{http://yann.lecun.com/exdb/mnist/}. It is de facto split in 2 subsets : a training set (60k entries) and a test set (10k entries). We will devide the training set into 50k entries of training and 10k for validation. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
+	
+	
+	***website Yann Lecun (+we need to do a bibliography? let's cite his HD3 triple spin paper)***.
 	
 	
 	When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general input, and is not overfitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
@@ -42,7 +49,12 @@
 	
 	
 	***explanation MNIST, visualisation, there's an grey-scale imagine in the img/ folder***
-	
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.7]{img/gYsJp.png}
+		\caption{An example image from the MNIST dataset. In this case, the label is "7".}
+		\label{img:example_mnist_img}
+	\end{figure}
 	
 	The programming language used in this study is Python 3.5, allowing us to plug in powerful mathematical, statistical and plotting tools, on top of the new machine learning framework Tensorflow.
 	
@@ -59,23 +71,22 @@
 	Let's consider 2 datasets, one is the original one, let's call it \texttt{dataset\_original}, the second one is a transformed one.
 	
 	
-	A transformation in our study is defined by a matrix multiplication to reduce the dimensionnality, and a function applied element-wise. Therefore, a transformation is defined by 3 parameters, a kind of matrix used for the reduction, a target dimension, and a function.
+	A transformation in our study is defined by a matrix multiplication to reduce the dimensionality, and a function applied element-wise. Therefore, a transformation is defined by 3 parameters, a kind of matrix used for the reduction, a target dimension, and a function.
 	
 	
-	The notation \texttt{d\_m\_td\_f} reprensents the dataset where the matrix m with target dimension td and function f were applied.
+	The notation \texttt{d\_m\_td\_f} represents the dataset where the matrix m with target dimension td and function f were applied.
 	
-	Let's consider a transformed dataset.
-	The idea is that we are going to take a set of 2uples representing 2 images. For each 2uple, we are going to compute the distance (which one is to be determined) between those two points:
+	Let's consider a transformed dataset. The idea is that we are going to take a set of 2uples representing 2 images. For each 2uple, we are going to compute the distance (which one is to be determined) between those two points:
 	
 	\begin{enumerate}
 		\item picked from the original, not transformed dataset,
 		\item picked from the transformed data set
 	\end{enumerate}
 
-	Then we divide the second distance by the first distance. If the transformation keep the information contained in the dataset, it will allow us to classify the data using the transformed dataset (faster). We suppose this is true with the euclidian distance, meaning that if the distances between two random points in the transformed dataset is roughly similar to the distance between the two original points in the original dataset, we won't have any problem classifying the data using the transformed dataset.
+	Then we divide the second distance by the first distance. If the transformation keep the information contained in the dataset, it will allow us to classify the data using the transformed dataset (faster). We suppose this is true with the Euclidean distance, meaning that if the distances between two random points in the transformed dataset is roughly similar to the distance between the two original points in the original dataset, we won't have any problem classifying the data using the transformed dataset.
 	
 	
-	Therefore, if we compute a huge number a quotient of distances, and we plot those results, we should expect a gaussian with mean 1 and small variance for a transformation that keeps the properties of the original dataset and then allows us to classify it.
+	Therefore, if we compute a huge number a quotient of distances, and we plot those results, we should expect a Gaussian with mean 1 and small variance for a transformation that keeps the properties of the original dataset and then allows us to classify it.
 	
 	
 	***theory, JLT, inequality, epsilon***
@@ -85,6 +96,22 @@
 	
 	
 	\subsection{Results}
+	
+	\begin{figure}
+		\centering
+		\begin{minipage}{.5\textwidth}
+			\centering
+			\includegraphics[width=.8\linewidth]{img/t_Drop_d_256_f_Identity.pdf}
+			\caption{t\_Drop\_d\_256\_f\_Identity}
+		\end{minipage}%
+		\begin{minipage}{.5\textwidth}
+			\centering
+			\includegraphics[width=0.8 \linewidth]{img/t_Drop_d_256_f_Sigmoid_diff.pdf}
+			\caption{t\_Drop\_d\_256\_f\_Sigmoid diff}
+			\label{fig:test2}
+		\end{minipage}
+	\end{figure}
+	
 	
 	***all the images are in the folder img/, some grouped to be able to compre them, some indepedent, I let you choose which one you want to put. The quotient of distance when we apply a function is not 1, we can say that we would have to improve the nonlinear element-wise function and better tune them to get better results, or that maybe we should use the angular distance or another distance with those functions***
 	
@@ -122,7 +149,9 @@
 	This faster computation pipeline will allow us to run various training phases allowing us to first tune and find the optimal hyperparameters for this dataset.
 	
 	
-	It will also allow us to extend the results to other datasets such as CIFAR-10 and CIFAR-100, which input images are a lot bigger than the one in MNIST, and where the complexity is way higher.
+	It will also allow us to extend the results to other datasets such as CIFAR-10 and CIFAR-100, which input images are a lot bigger than the one in MNIST, and where the complexity is significantly higher.
+	
+	
 	Being able to run the classification part will allow us to plot the optimal accuracy as a function of the feature map sizes and the stride.
 	
 	
@@ -132,13 +161,15 @@
 	
 	
 	\section{Conclusion}
-	This study was a great way to understand in depth the classifying architecture yielding the best result so far in image and sound recognition (aka convolutional neural networks), and the mechanisms associated with this architecture.
+	This study was a great way to understand in depth the classifying architecture yielding the best result so far in image and sound recognition (using convolutional neural networks), and the mechanisms associated with this architecture.
 	
 	
 	It was also a great way to understand ho structured compression works, and how it allows to reduce the computation times, while still preserving the accuracy. This knowledge is important to either run the algorithms linked with artificial intelligence faster, or run them on less efficient pieces of hardware such as mobile phones.
 
 
-	
+
+	\nocite{*}
+	\printbibliography
 
 
 \end{document}
