@@ -55,7 +55,22 @@ We can demonstrate that G/sqrt(d) where each coefficient of G is either picked i
 This compression is a great tool that will allow us to run the learning phase faster. Howver, this compression is a matrix multiplication of overall time complexity O(dnp), where d is the target dimension of the compression, n the original dimension, and p the number of inputs.  
 This is ressource consuming, and we can speed up this phase using structured compression:
 
-***explanation of structured compression***
+The idea behind structured compression is that instead of using a n*d matrix, we can use build up a n*d matrix repeating some components. When done in a clever way, both the spatial complexity and the time complexity can be decreased.
+The first building block of structured compression is a circulant matrix, let's call it G_circ. Instead of compressing the input dataset by multiplying it by G/sqrt(d), we can reduce it using a G_circ/sqrt(d) multiplcation. Instead of storing n*d independent stochastic components, we just store n of them and the matrix is built shifting those components by one at every row: ***poorly formulated, if you are inspired to explain it better***
+***image illustrating a G_circ matrix:
+g_1 g_2 g_3 ... g_n
+g_n g_1 g_2 ... g_n-1
+...
+***
+What is also great with this matrix, on top of the fact that the space required to store it is reduced, is that the time to compute G_circ * DATASET INPUT ***find a name*** can be reduced to n*log(d) using Fast Fourier Trasform ***formulas, wikipedia if we want to increase the size of the report*** 
+However, reducing the number of non deterministic parameters leads to a loss of indepence of the coefficient. We can't split the expectation as seen in the previous proof saying that g_i,j1 g_i,j2 are independent. To retrieve this independence property, we can multiply this circulant matrix with a diagonal matrix where the coeeficients are chosen independently from a N(0,1) or {-1,1} wp 1/2.
+
+Another key idea in those structured compression is that we need balanceness before we compress the data, we need to spread the data points evenly across all the space to make sure we are not compressing packed data. A way to achieve balanceness is to use Hadamard matrices.
+Thanks to the properties of a Hadamard matrix, we can compute the matrix multiplication with an input vector in O(n*log(n)) if n is a power of 2 (n = 2^k, H_k = ***recursive block definition, wikipedia***) 
+
+To sum up, the two main parts of structured compression are:
+1.balance the data using a rotation matrix. The hadamard matrix, thanks to it's recursive definition allows us to compute this step with small space complexity and in O(nlog(n)) time
+2.compress the data using a projection matrix. Here we can use a G matrix, or as proved just above, we can use a G_circ matrix to speed up the computation O(nlog(d) achieved) and reduce the space complexity. To maintain the independence caracteristic, we just need to use a diagonal matrix before we compute the compression using FFT.
 
 Non linear compression:
 ***explanation, chaining, but we don't have any result on that, maybe we don't want to include this***
