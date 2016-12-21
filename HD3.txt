@@ -10,7 +10,7 @@ In order to tackle this bottleneck, and thus allow to run classifying models mor
 Decreasing the dimensionnality of the dataset being learned results in reducing the number of basic operations computed by the hardware during the matrix multiplications and therefore speed up the classification.
 However, there is a limit to the number of dimension we can reduce the dataset we want to classify to. This paper will study more in depth the concept of dimensionnality reduction using structured compressions.
 
-***explanation to have some content, matrix multiplication O(n^3) time complexity ...***
+***explanation to have some content, matrix multiplication of size n*n O(n^3) time complexity ...***
 Here is why matrix multiplication are the basic operations in machine learning, at least when we use the basic feed forward structure taught by the backpropagation algorithm:
 ***http://briandolhansky.com/blog/2014/10/30/artificial-neural-networks-matrix-form-part-5***
 ***great explanations, we just have to explain the same thing here, put in some formulas in Latex showing that there is a lot of matrix multiplications>
@@ -25,19 +25,42 @@ Here is why matrix multiplication are the basic operations in machine learning, 
 
 2.Setup experimental
 To study the effect of dimensionnality reduction using structured compression, we are going to use the classic MNIST dataset of handwritten digits. This dataset consists in grey-scale 28*28 images representing digits. Each image is associated with a label describing the digit represented by the image.
-This dataset can be found at ***website Yann Lecun (+we need to do a bibliography? let's cite his HD3 triple spin paper)***. It is de facto split in 3 subsets : a training set, a test set, and a validation set. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
-When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general input, and is not overfitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
-Here, we merged the training set and test set to then be able to choose the number of images used in the training set and the testing set. Originally, they respectively contained 50000 and 10000 images. Merging and spliting them as we wish allows us to have different proportion of input data in the training set and the dataset.
+Here is an example of an image (plotted using matplotlib)
 ***explanation MNIST, visualisation, there's an grey-scale imagine in the img/ folder***
+This image is just a matrix of size 28 by 28> Each cell of the matrix represents a pixel. The value in each cell is an ***int between 0 and 256///float between 0 and 1?*** representing a shade of grey. (***Here I guess we took 0 -> black, 1 -> white***)
 
-The programming language used in this study is Python 3.5, allowing us to plug in powerful mathematical, statistical and plotting tools, on top of the new machine learning framework tensorflow (R)
-This framework is a useful interface when we want to easily run the computations on GPU, which provides a huge speed up compared to running the computations on CPU because ***explanation to have some content***
+This dataset can be found at ***website Yann Lecun (+we need to do a bibliography? let's cite his HD3 triple spin paper)***. It is de facto split in 3 subsets : a training set, a test set, and a validation set. We decided to run our study on the dataset resulting of the merge of the training set and the dataset.
+When we want to classify a dataset, we have to separate it in a training set and a test set. The training set is used to train the classifier (usually a neural network), and the test set is used to verify that the classification is working for general inputs, and is not overfitted to the training set. You can see this as making sure that the classifier didn't learn by heart the inputs contained in the training set.
+Here, we merged the training set and test set to then be able to choose the number of images used in the training set and the testing set. Originally, they respectively contained 50000 and 10000 images. Merging and spliting them as we wish allows us to have different proportion of input data in the training set and the test set.
+
+The programming language used in this study is Python 3.5, allowing us to plug in powerful mathematical, statistical and plotting tools, on top of the new machine learning framework tensorflow ***(TM) don't know about copyright etc***
+This framework is a useful interface when we want to easily run the computations on GPU, which provides a huge speed up compared to running the computations on CPU because ***explanation about how GPU is better than CPU regarding heavylifting operations to have some content***
 
 Structured compression:
 ***explanation in depth***
+Before we speak about structured compression, let's speak about classic compression. A compression part is just used to decrease the dimensionnality of the input data (in the case of the MNIST dataset, each image leaves in the [0,1]^28*28 space as we can consider a 28 by 28 matrix as a flat vector of size 28*28). Compressing the MNIST dataset means finding a mapping between R^n to R^d where n is the dimensionnality of the pristine, uncompressed input, and d is a number smaller than n.
+An easy compression mapping to understand is just the action of dropping components. For example in MNIST, if we decided to naively drop the last 200 hundred components, we would end up in [0,1]^584, which will allow us to run the learning phase faster due to a reduce number of basic operations in the matrix multiplications.
+Why is this reduction naive? Because dropping arbitrarily the last 200 components might lead to the loss of important information. A better classic compression will take into consideration all the original components of the input data (all the pixels in the case of image recognition with MNIST), such that we don't lose any information.
+There drop mapping could be seen as a simple identity matrix bloc completed by only zeros. This compression leads to a loss of information that won't allow us to classify the dataset in the same way as we would have done on the original dataset.
+
+Before we dive into a better classic compression and structured compression, let's notice that if we want to be able to classify a compressed dataset and obtain almost the same results as when we classify the uncompressed dataset, we need an invariant. Something that will allow us to say that two inputs in the same class/set/group are close together, amd that two inputs that are in different classes/sets/groups are far from each other. Each input can be seen as a vector in the R^n space. After the compression, the same input is a vector in the R^d space. What comes to mind as an invariant would be a distance, a notion that expresses clearly the fact that two inputs are similar when they are close to each other, and different when they are far from each other.
+Note that we don't know yet which distance to use. However, since we are working in finite dimension, all the norms are equivalent, and it is therefore convenient and not restricting to chose the euclidian distance (L2 norm), as one possible distance. aAnother distance that could be chosen is the angular distance.
+
+A great compression is therefore a compression that won't change a given distance by much. There's a theoretical limit to the level of compression we can achieve, if we want to keep the accuracy within a certain range, and this theoretical result is given by the JLT theorem:
+***write down the mathematical formulas and theorem of JLT we saw in class, there's a wikipedia page I think if you don't have your notes***
+
+We can demonstrate that G/sqrt(d) where each coefficient of G is either picked independantly into N(0,1) a standard gaussian RV, or {-1,1} (mean 0, variance not 0) will compress the dataset to R^d (G is of size R^n,d) and will keep the euclidian distance between two compressed inputs close to the original euclidian distance between the two uncompressed inputs.
+***Here is the proof, if you don't have it I'll send a picture, it's quite fast***
+
+This compression is a great tool that will allow us to run the learning phase faster. Howver, this compression is a matrix multiplication of overall time complexity O(dnp), where d is the target dimension of the compression, n the original dimension, and p the number of inputs.  
+This is ressource consuming, and we can speed up this phase using structured compression:
+
+***explanation of structured compression***
 
 Non linear compression:
 ***explanation, chaining, but we don't have any result on that, maybe we don't want to include this***
+
+
 
 3.Results
 Let's consider 2 datasets, one is the original one, let's call it dataset_original, the second one is a transformed one.
